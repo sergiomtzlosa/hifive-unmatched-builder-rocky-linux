@@ -49,6 +49,7 @@ RUN apt-get update && apt-get install -y \
     vim \
     file \
     libfdt-dev \
+    kmod \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
