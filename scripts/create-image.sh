@@ -109,23 +109,51 @@ echo "Loop device: ${LOOP_DEV}"
 # Force kernel to re-read partition table
 partprobe ${LOOP_DEV} 2>/dev/null || true
 blockdev --rereadpt ${LOOP_DEV} 2>/dev/null || true
-sleep 2
+
+# Try kpartx as more reliable alternative
+echo "Creating partition mappings with kpartx..."
+kpartx -av ${LOOP_DEV} || true
+
+sleep 3
 
 # Verify partitions exist
 echo "Checking for partition devices..."
+echo "Partition devices:"
+ls -l ${LOOP_DEV}* 2>/dev/null || echo "No partition devices found with ${LOOP_DEV}* pattern"
+
 if [ ! -b "${LOOP_DEV}p1" ] || [ ! -b "${LOOP_DEV}p2" ] || [ ! -b "${LOOP_DEV}p3" ]; then
-    echo "ERROR: Partition block devices not created"
-    echo "Loop device info:"
-    losetup -l | grep $(basename ${LOOP_DEV}) || true
-    ls -la ${LOOP_DEV}* || true
+    echo "Standard partition naming (${LOOP_DEV}pN) not found, checking alternatives..."
     
-    # Try alternative partition naming (loop24p1 vs loop24_1)
-    if [ -b "${LOOP_DEV}1" ]; then
+    # Try kpartx device mapper naming (/dev/mapper/loopXXpY)
+    LOOP_NAME=$(basename ${LOOP_DEV})
+    if [ -b "/dev/mapper/${LOOP_NAME}p1" ]; then
+        echo "Using kpartx device mapper naming scheme"
+        PART1="/dev/mapper/${LOOP_NAME}p1"
+        PART2="/dev/mapper/${LOOP_NAME}p2"
+        PART3="/dev/mapper/${LOOP_NAME}p3"
+    # Try alternative partition naming (loop24_1 vs loop24p1)
+    elif [ -b "${LOOP_DEV}1" ]; then
         echo "Using alternative partition naming scheme"
         PART1="${LOOP_DEV}1"
         PART2="${LOOP_DEV}2"
         PART3="${LOOP_DEV}3"
     else
+        echo "ERROR: Partition block devices not created"
+        echo ""
+        echo "Attempted partition paths:"
+        echo "  ${LOOP_DEV}p1, ${LOOP_DEV}p2, ${LOOP_DEV}p3"
+        echo "  /dev/mapper/${LOOP_NAME}p1, p2, p3"
+        echo "  ${LOOP_DEV}1, ${LOOP_DEV}2, ${LOOP_DEV}3"
+        echo ""
+        echo "Loop device info:"
+        losetup -l | grep $(basename ${LOOP_DEV}) || true
+        echo ""
+        echo "Device mapper info:"
+        ls -l /dev/mapper/ | grep ${LOOP_NAME} || echo "No device mapper entries"
+        echo ""
+        echo "This is likely a Docker container limitation."
+        echo "Try running with: docker-compose up -d --privileged"
+        
         losetup -d ${LOOP_DEV}
         exit 1
     fi

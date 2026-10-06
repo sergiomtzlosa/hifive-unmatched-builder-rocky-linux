@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    privileged: true
     image: hifive-unmatched-builder:latest
     container_name: uboot-builder
     privileged: true  # Required for loop device operations
