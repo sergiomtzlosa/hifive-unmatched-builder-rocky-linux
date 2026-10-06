@@ -32,7 +32,7 @@ Build a complete bootable system for the SiFive HiFive Unmatched Rev B board (RI
 cd /path/to/hifive-unmatched-builder-rocky-linux
 
 # 2. Make scripts executable (first time only)
-chmod +x /scripts/*.sh
+chmod +x scripts/*.sh
 
 # 3. Build the Docker image (first time only)
 docker-compose build
