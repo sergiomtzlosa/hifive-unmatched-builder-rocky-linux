@@ -94,7 +94,7 @@ ls -lh workspace/output/rocky-riscv-unmatched.img
 ## Project Structure
 
 ```
-uboot-riscv/
+hifive-unmatched-builder-rocky-linux/
 ├── Dockerfile              # Docker build environment
 ├── docker-compose.yml      # Docker orchestration
 ├── README.md              # This file
