@@ -84,12 +84,12 @@ fi
 
 # Final confirmation
 echo ""
-echo "┌────────────────────────────────────────────────────────────┐"
-echo "│                       WARNING                              │"
-echo "│                                                            │"
-echo "│  This will COMPLETELY ERASE all data on ${DEVICE}          │"
-echo "│  This operation CANNOT be undone!                          │"
-echo "└────────────────────────────────────────────────────────────┘"
+echo "+------------------------------------------------------------+"
+echo "|                       WARNING                              |"
+echo "|                                                            |"
+echo "|  This will COMPLETELY ERASE all data on ${DEVICE}          |"
+echo "|  This operation CANNOT be undone!                          |"
+echo "+------------------------------------------------------------+"
 echo ""
 read -p "Are you absolutely sure you want to continue? (type 'yes'): " CONFIRM
 

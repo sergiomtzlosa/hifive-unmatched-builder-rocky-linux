@@ -113,7 +113,7 @@ picocom -b 115200 /dev/ttyUSB0
 
 ### Known Compatible Cards
 
-✅ **Tested and Working:**
+[OK] **Tested and Working:**
 - SanDisk Ultra 16GB Class 10
 - Samsung EVO Plus 32GB UHS-I
 - Kingston Canvas Select Plus 16GB Class 10

@@ -90,10 +90,10 @@ sync
 
 ```
 workspace/
-├── build/                    # Build artifacts
-├── output/                   # Final image
-│   └── rocky-riscv-unmatched.img
-└── logs/                     # Build logs
+|-- build/                    # Build artifacts
+|-- output/                   # Final image
+|   +-- rocky-riscv-unmatched.img
++-- logs/                     # Build logs
 ```
 
 ## View Logs

@@ -50,12 +50,12 @@ The kernel build creates:
 
 ```
 /workspace/output/kernel/
-├── vmlinuz-6.6.x               # Kernel image
-├── initramfs-6.6.x.img         # Initial ramdisk
-├── modules-6.6.x.tar.gz        # Kernel modules archive
-└── dtbs/6.6.x/                 # Device tree blobs
-    └── sifive/
-        └── hifive-unmatched-a00.dtb  # HiFive Unmatched DTB
+|-- vmlinuz-6.6.x               # Kernel image
+|-- initramfs-6.6.x.img         # Initial ramdisk
+|-- modules-6.6.x.tar.gz        # Kernel modules archive
++-- dtbs/6.6.x/                 # Device tree blobs
+    +-- sifive/
+        +-- hifive-unmatched-a00.dtb  # HiFive Unmatched DTB
 ```
 
 ## Installing Kernel to Existing Image
