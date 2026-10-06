@@ -31,7 +31,7 @@ Log out and back in for group changes to take effect.
 ## Step 2: Clone or Navigate to Project
 
 ```bash
-cd /path/to/uboot-riscv
+cd /path/to/hifive-unmatched-builder-rocky-linux
 ```
 
 ## Step 3: Build Docker Image (First Time Only)

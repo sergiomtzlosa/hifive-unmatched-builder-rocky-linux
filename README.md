@@ -29,7 +29,7 @@ Build a complete bootable system for the SiFive HiFive Unmatched Rev B board (RI
 
 ```bash
 # 1. Clone or navigate to this repository
-cd /path/to/uboot-riscv
+cd /path/to/hifive-unmatched-builder-rocky-linux
 
 # 2. Make scripts executable (first time only)
 chmod +x /scripts/*.sh
