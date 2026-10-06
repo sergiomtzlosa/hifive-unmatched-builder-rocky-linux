@@ -70,7 +70,7 @@ log ""
 # Step 1: Build OpenSBI
 log ""
 log "===================================================================="
-log "  [1/6] Building OpenSBI Firmware"
+log "  [1/8] Building OpenSBI Firmware"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/build-opensbi.sh"; then
     log "[OK] OpenSBI build completed successfully"
@@ -83,7 +83,7 @@ fi
 # Step 2: Build U-Boot
 log ""
 log "===================================================================="
-log "  [2/6] Building U-Boot Bootloader"
+log "  [2/8] Building U-Boot Bootloader"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/build-uboot.sh"; then
     log "[OK] U-Boot build completed successfully"
@@ -96,7 +96,7 @@ fi
 # Step 3: Download rootfs
 log ""
 log "===================================================================="
-log "  [3/6] Downloading Rocky Linux Rootfs"
+log "  [3/8] Downloading Rocky Linux Rootfs"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/download-rootfs.sh"; then
     log "[OK] Rootfs download completed successfully"
@@ -106,10 +106,23 @@ else
     exit 1
 fi
 
-# Step 4: Create disk image
+# Step 4: Build Linux kernel
 log ""
 log "===================================================================="
-log "  [4/6] Creating Bootable Disk Image"
+log "  [4/8] Building Linux Kernel"
+log "===================================================================="
+if bash "${SCRIPT_DIR}/build-kernel.sh"; then
+    log "[OK] Kernel build completed successfully"
+else
+    log "[ERROR] Kernel build failed!"
+    log "Check log file: ${LOG_FILE}"
+    exit 1
+fi
+
+# Step 5: Create disk image
+log ""
+log "===================================================================="
+log "  [5/8] Creating Bootable Disk Image"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/create-image.sh"; then
     log "[OK] Disk image created successfully"
@@ -119,10 +132,23 @@ else
     exit 1
 fi
 
-# Step 5: Setup boot configuration
+# Step 6: Install kernel to rootfs
 log ""
 log "===================================================================="
-log "  [5/6] Configuring Boot Files"
+log "  [6/8] Installing Kernel to Rootfs"
+log "===================================================================="
+if bash "${SCRIPT_DIR}/install-kernel.sh"; then
+    log "[OK] Kernel installation completed successfully"
+else
+    log "[ERROR] Kernel installation failed!"
+    log "Check log file: ${LOG_FILE}"
+    exit 1
+fi
+
+# Step 7: Setup boot configuration
+log ""
+log "===================================================================="
+log "  [7/8] Configuring Boot Files"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/setup-boot.sh"; then
     log "[OK] Boot configuration completed successfully"
@@ -132,10 +158,10 @@ else
     exit 1
 fi
 
-# Step 6: Generate documentation
+# Step 8: Generate documentation
 log ""
 log "===================================================================="
-log "  [6/6] Generating Build Information"
+log "  [8/8] Generating Build Information"
 log "===================================================================="
 
 OUTPUT_DIR=${OUTPUT_DIR:-/workspace/output}

@@ -21,12 +21,12 @@ Set MSEL[3:0] = `1011`:
 
 ```
    MSEL Switch Block
-   ┌─────────────┐
-   │ 0 1 2 3 C   │  ← Switch labels
-   ├─┬─┬─┬─┬─────┤
-   │█│█│ │█│     │  ← ON position (toward center)
-   │ │ │█│ │█    │  ← OFF position (toward edge)
-   └─┴─┴─┴─┴─────┘
+   +-------------+
+   | 0 1 2 3 C   |  <- Switch labels
+   +-+-+-+-+-----+
+   |*|*| |*|     |  <- ON position (toward center)
+   | | |*| |*    |  <- OFF position (toward edge)
+   +-+-+-+-+-----+
      1 1 0 1
 
    Position: ON  ON  OFF ON  (OFF)
@@ -46,7 +46,7 @@ Set MSEL[3:0] = `1011`:
 - **QSPI Flash:** `0110` (Not used in this guide)
 - **JTAG:** `1111` (For debugging)
 
-⚠️ **Important:** Always power off the board before changing MSEL switches!
+**Important:** Always power off the board before changing MSEL switches!
 
 ## Serial Console Connection
 
@@ -56,7 +56,7 @@ Set MSEL[3:0] = `1011`:
 2. **Connect a micro-USB cable** from your PC to the board
 3. **Install drivers** (usually automatic on Windows 10/11)
 4. **Find the COM port:**
-   - Open Device Manager (Win + X → Device Manager)
+   - Open Device Manager (Win + X -> Device Manager)
    - Expand "Ports (COM & LPT)"
    - Look for "USB Serial Port (COMx)" or "Silicon Labs CP210x"
    - Note the COM port number (e.g., COM3)
@@ -85,8 +85,8 @@ Configure your terminal software with these settings:
   
 - **TeraTerm**
   - Download: https://ttssh2.osdn.jp/
-  - Setup → Serial port → Select COM port
-  - Setup → Serial port → Speed: 115200
+  - Setup -> Serial port -> Select COM port
+  - Setup -> Serial port -> Speed: 115200
 
 - **Windows Terminal** (with WSL)
   ```bash
@@ -118,7 +118,7 @@ picocom -b 115200 /dev/ttyUSB0
 - Samsung EVO Plus 32GB UHS-I
 - Kingston Canvas Select Plus 16GB Class 10
 
-⚠️ **Problematic Cards:**
+**Problematic Cards:**
 - Some generic/no-name cards may not work reliably
 - Very old cards (< Class 4) are too slow
 
@@ -271,7 +271,7 @@ Power on sequence:
 
 ## Safety Precautions
 
-⚠️ **Important Safety Notes:**
+**Important Safety Notes:**
 
 - Always power off before connecting/disconnecting components
 - Never change MSEL switches while powered on

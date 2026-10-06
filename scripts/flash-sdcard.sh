@@ -130,7 +130,7 @@ dd if="${DEVICE}" of=/dev/null bs=4M count=$((IMAGE_SIZE / 4 / 1024 / 1024)) sta
 
 echo ""
 echo "===================================="
-echo "✓ SD Card flashed successfully!"
+echo "[OK] SD Card flashed successfully!"
 echo "===================================="
 echo ""
 echo "Partition layout:"
