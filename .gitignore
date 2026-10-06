@@ -1,0 +1,44 @@
+# Build artifacts
+workspace/build/
+workspace/output/*.img
+workspace/output/*.bin
+workspace/output/*.itb
+
+# Logs
+workspace/logs/
+
+# Keep BUILD_INFO.txt and checksums
+!workspace/output/BUILD_INFO.txt
+!workspace/output/*.sha256
+
+# Environment files
+.env
+
+# Docker
+.docker/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+
+# Downloaded files
+*.tar.gz
+*.tar.xz
+*.tar.bz2
+*.zip
+
+# Loop device mounts
+/tmp/rootfs-*

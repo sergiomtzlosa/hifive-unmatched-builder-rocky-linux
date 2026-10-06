@@ -1,0 +1,24 @@
+# U-Boot extlinux.conf template for HiFive Unmatched
+# This file is processed by setup-boot.sh to generate the actual boot configuration
+
+menu title Rocky Linux on HiFive Unmatched
+timeout 50
+default rocky
+
+label rocky
+    menu label Rocky Linux (kernel ${KERNEL_VERSION})
+    kernel /boot/vmlinuz-${KERNEL_VERSION}
+    fdt /boot/dtbs/${KERNEL_VERSION}/sifive/hifive-unmatched-a00.dtb
+    initrd /boot/initramfs-${KERNEL_VERSION}.img
+    append earlyprintk rw root=${ROOT_DEVICE} rootfstype=ext4 rootwait console=ttySIF0,115200 LANG=en_US.UTF-8 earlycon
+
+label rocky-recovery
+    menu label Rocky Linux (recovery mode)
+    kernel /boot/vmlinuz-${KERNEL_VERSION}
+    fdt /boot/dtbs/${KERNEL_VERSION}/sifive/hifive-unmatched-a00.dtb
+    initrd /boot/initramfs-${KERNEL_VERSION}.img
+    append earlyprintk rw root=${ROOT_DEVICE} rootfstype=ext4 rootwait console=ttySIF0,115200 LANG=en_US.UTF-8 earlycon single
+
+# Variables:
+# ${KERNEL_VERSION} - Installed kernel version (e.g., 6.6.0)
+# ${ROOT_DEVICE}    - Root filesystem device (e.g., /dev/mmcblk0p3 for SD, /dev/nvme0n1p1 for NVMe)

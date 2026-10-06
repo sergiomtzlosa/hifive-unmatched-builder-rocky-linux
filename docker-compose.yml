@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  uboot-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hifive-unmatched-builder:latest
+    container_name: uboot-builder
+    privileged: true  # Required for loop device operations
+    cap_add:
+      - SYS_ADMIN  # Required for mount operations
+    devices:
+      - /dev/loop-control:/dev/loop-control  # Loop device control
+    volumes:
+      # Mount workspace directory
+      - ./workspace:/workspace
+      # Mount scripts directory
+      - ./scripts:/scripts
+      # Mount configs directory
+      - ./configs:/configs
+      # Mount docs directory
+      - ./docs:/docs
+      # Mount /dev for loop device access
+      - /dev:/dev:rslave
+    environment:
+      - CROSS_COMPILE=riscv64-buildroot-linux-gnu-
+      - OPENSBI_VERSION=v1.3
+      - UBOOT_VERSION=v2024.01
+      - IMAGE_SIZE=4G
+    stdin_open: true
+    tty: true
+    command: /bin/bash -c "while true; do sleep 1000; done"
