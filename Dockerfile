@@ -50,6 +50,7 @@ RUN apt-get update && apt-get install -y \
     file \
     libfdt-dev \
     kmod \
+    cpio \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
