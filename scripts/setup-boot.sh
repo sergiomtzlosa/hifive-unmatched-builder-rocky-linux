@@ -107,8 +107,30 @@ fi
 # Set root password
 echo "Setting root password..."
 ROOT_PASSWORD=${ROOT_PASSWORD:-rockylinux}
-echo "root:${ROOT_PASSWORD}" | chroot "${MOUNT_POINT}" chpasswd 2>/dev/null || \
-    echo "WARNING: Could not set root password. Set it manually after first boot."
+
+# Try chroot method first
+if echo "root:${ROOT_PASSWORD}" | chroot "${MOUNT_POINT}" chpasswd 2>/dev/null; then
+    echo "Root password set successfully via chpasswd"
+else
+    # Fallback: Generate hashed password and update shadow file directly
+    echo "chpasswd failed, using fallback method..."
+    
+    # Generate password hash using openssl
+    # Using SHA-512 hash (method 6)
+    SALT=$(openssl rand -base64 16 | tr -dc 'a-zA-Z0-9' | head -c 16)
+    HASHED_PASS=$(openssl passwd -6 -salt "${SALT}" "${ROOT_PASSWORD}")
+    
+    # Update shadow file
+    if [ -f "${MOUNT_POINT}/etc/shadow" ]; then
+        # Replace root password in shadow file
+        sed -i "s|^root:[^:]*:|root:${HASHED_PASS}:|" "${MOUNT_POINT}/etc/shadow"
+        echo "Root password set successfully via shadow file"
+        echo "Password: ${ROOT_PASSWORD}"
+    else
+        echo "WARNING: Could not set root password. /etc/shadow not found."
+        echo "Set it manually after first boot."
+    fi
+fi
 
 # Configure network (DHCP)
 echo "Configuring network..."
