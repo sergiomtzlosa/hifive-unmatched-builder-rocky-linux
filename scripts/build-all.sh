@@ -70,7 +70,7 @@ log ""
 # Step 1: Build OpenSBI
 log ""
 log "===================================================================="
-log "  [1/8] Building OpenSBI Firmware"
+log "  [1/10] Building OpenSBI Firmware"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/build-opensbi.sh"; then
     log "[OK] OpenSBI build completed successfully"
@@ -83,7 +83,7 @@ fi
 # Step 2: Build U-Boot
 log ""
 log "===================================================================="
-log "  [2/8] Building U-Boot Bootloader"
+log "  [2/10] Building U-Boot Bootloader"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/build-uboot.sh"; then
     log "[OK] U-Boot build completed successfully"
@@ -96,7 +96,7 @@ fi
 # Step 3: Download rootfs
 log ""
 log "===================================================================="
-log "  [3/8] Downloading Rocky Linux Rootfs"
+log "  [3/10] Downloading Rocky Linux Rootfs"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/download-rootfs.sh"; then
     log "[OK] Rootfs download completed successfully"
@@ -109,7 +109,7 @@ fi
 # Step 4: Build Linux kernel
 log ""
 log "===================================================================="
-log "  [4/8] Building Linux Kernel"
+log "  [4/10] Building Linux Kernel"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/build-kernel.sh"; then
     log "[OK] Kernel build completed successfully"
@@ -122,7 +122,7 @@ fi
 # Step 5: Create disk image
 log ""
 log "===================================================================="
-log "  [5/8] Creating Bootable Disk Image"
+log "  [5/10] Creating Bootable Disk Image"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/create-image.sh"; then
     log "[OK] Disk image created successfully"
@@ -135,7 +135,7 @@ fi
 # Step 6: Install kernel to rootfs
 log ""
 log "===================================================================="
-log "  [6/8] Installing Kernel to Rootfs"
+log "  [6/10] Installing Kernel to Rootfs"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/install-kernel.sh"; then
     log "[OK] Kernel installation completed successfully"
@@ -148,7 +148,7 @@ fi
 # Step 7: Setup boot configuration
 log ""
 log "===================================================================="
-log "  [7/8] Configuring Boot Files"
+log "  [7/10] Configuring Boot Files"
 log "===================================================================="
 if bash "${SCRIPT_DIR}/setup-boot.sh"; then
     log "[OK] Boot configuration completed successfully"
@@ -158,10 +158,39 @@ else
     exit 1
 fi
 
-# Step 8: Generate documentation
+# Step 8: Install system packages
 log ""
 log "===================================================================="
-log "  [8/8] Generating Build Information"
+log "  [8/10] Installing System Packages (systemd, SSH, etc.)"
+log "===================================================================="
+log "This step will install essential packages to make the rootfs bootable."
+log "This may take 10-20 minutes depending on network speed..."
+log ""
+if bash "${SCRIPT_DIR}/install-system-packages.sh"; then
+    log "[OK] System packages installed successfully"
+else
+    log "[ERROR] System package installation failed!"
+    log "Check log file: ${LOG_FILE}"
+    exit 1
+fi
+
+# Step 9: Reset root password
+log ""
+log "===================================================================="
+log "  [9/10] Setting Root Password"
+log "===================================================================="
+if bash "${SCRIPT_DIR}/reset-root-password.sh"; then
+    log "[OK] Root password set successfully"
+else
+    log "[ERROR] Root password reset failed!"
+    log "Check log file: ${LOG_FILE}"
+    exit 1
+fi
+
+# Step 10: Generate documentation
+log ""
+log "===================================================================="
+log "  [10/10] Generating Build Information"
 log "===================================================================="
 
 OUTPUT_DIR=${OUTPUT_DIR:-/workspace/output}
