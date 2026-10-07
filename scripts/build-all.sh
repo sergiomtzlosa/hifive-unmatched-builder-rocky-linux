@@ -222,33 +222,49 @@ Image Location:
 ---------------
 ${OUTPUT_DIR}/${IMAGE_NAME:-rocky-riscv-unmatched.img}
 
-Next Steps:
------------
-1. Test in QEMU:
-   /scripts/run-qemu.sh
+Next Steps - Flash to Real Hardware:
+------------------------------------
+  NOTE: This image does NOT work in QEMU!
+  It is built for SiFive HiFive Unmatched hardware only.
 
-2. Flash to SD card (on Linux host):
+1. Flash to SD card (Linux/Mac):
    sudo dd if=${OUTPUT_DIR}/${IMAGE_NAME:-rocky-riscv-unmatched.img} of=/dev/sdX bs=4M status=progress conv=fsync
+   sudo sync
 
-3. For Windows, use tools like:
-   - Rufus
+2. Flash to SD card (Windows):
+   Use one of these tools:
+   - Rufus (https://rufus.ie/)
    - Win32 Disk Imager
-   - balenaEtcher
+   - balenaEtcher (https://www.balena.io/etcher/)
 
-4. Insert SD card into HiFive Unmatched
-5. Set MSEL switches: 1011 (ON-ON-OFF-ON)
-6. Connect serial console (115200 baud)
-7. Power on and watch boot process
+3. Insert SD card into HiFive Unmatched board
+   - Use the SD card slot on the board
+
+4. Set MSEL DIP switches for SD card boot:
+   Position: 1011 (ON-ON-OFF-ON from left to right)
+
+5. Connect serial console:
+   - Baud rate: 115200, 8N1
+   - Device: ttySIF0 on board (ttyUSB0 or similar on host)
+   - Use minicom, screen, or PuTTY
+
+6. Connect Ethernet cable (DHCP will auto-configure)
+
+7. Power on the board and watch boot process
 
 Default Credentials:
 --------------------
 Username: root
 Password: ${ROOT_PASSWORD:-rockylinux}
+SSH: Enabled on port 22
 
-Serial Console:
----------------
-Device: ttySIF0
-Baud: 115200
+Installed Software:
+-------------------
+- systemd (full init system)
+- OpenSSH server
+- NetworkManager (DHCP configured)
+- Basic system utilities
+- vim, nano text editors
 EOF
 
 log "Build information saved to: ${BUILD_INFO}"
@@ -262,7 +278,7 @@ SECONDS=$((DURATION % 60))
 
 log ""
 log "======================================================================="
-log "  ? BUILD COMPLETE!"
+log "  BUILD COMPLETE!"
 log "======================================================================="
 log ""
 log "Build ended: $(date)"
@@ -275,9 +291,24 @@ log "  - ${OUTPUT_DIR}/u-boot.itb"
 log "  - ${OUTPUT_DIR}/BUILD_INFO.txt"
 log "  - ${LOG_FILE}"
 log ""
-log "Next steps:"
-log "  1. Test in QEMU:       /scripts/run-qemu.sh"
-log "  2. Or flash to SD:     See BUILD_INFO.txt for instructions"
+log "Next Steps - Flash to REAL Hardware:"
+log "======================================"
+log ""
+log "WARNING: This image does NOT work in QEMU!"
+log "WARNING: Use SiFive HiFive Unmatched hardware only."
+log ""
+log "1. Flash to SD card:"
+log "   Linux/Mac:  sudo dd if=${OUTPUT_DIR}/${IMAGE_NAME:-rocky-riscv-unmatched.img} of=/dev/sdX bs=4M status=progress"
+log "   Windows:    Use Rufus or balenaEtcher"
+log ""
+log "2. Insert SD card into HiFive Unmatched"
+log "3. Set MSEL switches: 1011 (ON-ON-OFF-ON)"
+log "4. Connect serial console (115200 baud)"
+log "5. Power on board"
+log ""
+log "Default login: root / ${ROOT_PASSWORD:-rockylinux}"
+log ""
+log "See BUILD_INFO.txt for detailed instructions."
 log ""
 log "======================================================================="
 log ""

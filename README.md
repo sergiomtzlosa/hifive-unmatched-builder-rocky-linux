@@ -1,6 +1,8 @@
 # HiFive Unmatched U-Boot + Rocky Linux Builder
 
-Build a complete bootable system for the SiFive HiFive Unmatched Rev B board (RISC-V FU740) that boots Rocky Linux, with full QEMU emulation support for testing (failing as expected, I do not own a HiFive Unmatched U-Boot board).
+Build a complete bootable Rocky Linux system for the SiFive HiFive Unmatched Rev B board (RISC-V FU740) with full systemd, SSH, and networking support.
+
+**Note**: This image is built for **real HiFive Unmatched hardware only**. It does NOT work in QEMU due to hardware-specific bootloader configuration.
 
 ## Quick Start (Linux + Docker)
 
@@ -46,35 +48,25 @@ docker-compose up -d
 docker-compose exec uboot-builder /scripts/build-all.sh
 ```
 
-Build time: 55-90 minutes depending on your hardware (includes kernel compilation).
+Build time: 60-120 minutes depending on your hardware (includes kernel compilation and package installation).
 
 The build process will:
 1. Build OpenSBI firmware (~5 min)
 2. Build U-Boot bootloader (~10 min)
 3. Download Rocky Linux rootfs (~5 min)
-4. **Build Linux kernel (~20 min)**
+4. Build Linux kernel (~20 min)
 5. Create bootable disk image (~10 min)
-6. **Install kernel to rootfs (~2 min)**
+6. Install kernel to rootfs (~2 min)
 7. Configure boot files (~2 min)
-8. Generate build documentation (~1 min)
+8. **Install system packages (systemd, SSH, NetworkManager) (~15-20 min)**
+9. **Set root password (~1 min)**
+10. Generate build documentation (~1 min)
 
-### Test in QEMU
+### Flash to SD Card
 
-After the build completes:
+**Important**: This image is for real hardware only. Do not attempt to run in QEMU - it will fail with memory access errors.
 
-```bash
-docker-compose exec uboot-builder /scripts/run-qemu.sh
-```
-
-Watch the boot process:
-- U-Boot bootloader starts
-- Extlinux menu appears
-- Rocky Linux kernel loads
-- Login prompt appears
-
-To exit QEMU: Press Ctrl+A, then X
-
-### View Build Logs
+After the build completes, flash the image to an SD card and boot on the HiFive Unmatched board.
 
 All build output is logged to timestamped files:
 
@@ -182,6 +174,15 @@ WARNING: Double-check the device name! dd will overwrite any device you specify.
 5. **Login**
    - Username: root
    - Password: rockylinux
+   - SSH is enabled and DHCP networking is configured
+
+**What's Included:**
+- systemd init system
+- OpenSSH server
+- NetworkManager with DHCP
+- Basic system utilities (vim, nano, tar, etc.)
+- Logging (rsyslog)
+- Filesystem tools
 
 ## Boot Sequence
 

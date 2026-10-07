@@ -178,7 +178,7 @@ echo "Package installation complete!"
 CHROOT_EOF
 then
     echo ""
-    echo "⚠️  WARNING: Package installation had errors!"
+    echo "WARNING: Package installation had errors!"
     echo "The system may not be fully bootable."
     echo "You may need to manually install packages or check network connectivity."
     echo ""

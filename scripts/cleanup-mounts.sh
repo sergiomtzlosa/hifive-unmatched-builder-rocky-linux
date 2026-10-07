@@ -36,15 +36,15 @@ fi
 echo "Unmounting nested filesystems..."
 if [ -d "${MOUNT_POINT}" ]; then
     # Unmount recursively bound devices
-    umount -R "${MOUNT_POINT}/dev" 2>/dev/null && echo "  ✓ Unmounted ${MOUNT_POINT}/dev" || echo "  - No dev mount"
+    umount -R "${MOUNT_POINT}/dev" 2>/dev/null && echo "  [OK] Unmounted ${MOUNT_POINT}/dev" || echo "  - No dev mount"
     
     # Unmount proc and sys
-    umount "${MOUNT_POINT}/proc" 2>/dev/null && echo "  ✓ Unmounted ${MOUNT_POINT}/proc" || echo "  - No proc mount"
-    umount "${MOUNT_POINT}/sys" 2>/dev/null && echo "  ✓ Unmounted ${MOUNT_POINT}/sys" || echo "  - No sys mount"
+    umount "${MOUNT_POINT}/proc" 2>/dev/null && echo "  [OK] Unmounted ${MOUNT_POINT}/proc" || echo "  - No proc mount"
+    umount "${MOUNT_POINT}/sys" 2>/dev/null && echo "  [OK] Unmounted ${MOUNT_POINT}/sys" || echo "  - No sys mount"
     
     # Force unmount any remaining mounts at the mount point
     if mountpoint -q "${MOUNT_POINT}" 2>/dev/null; then
-        umount -f "${MOUNT_POINT}" 2>/dev/null && echo "  ✓ Force unmounted ${MOUNT_POINT}" || umount -l "${MOUNT_POINT}" 2>/dev/null && echo "  ✓ Lazy unmounted ${MOUNT_POINT}"
+        umount -f "${MOUNT_POINT}" 2>/dev/null && echo "  [OK] Force unmounted ${MOUNT_POINT}" || umount -l "${MOUNT_POINT}" 2>/dev/null && echo "  [OK] Lazy unmounted ${MOUNT_POINT}"
     else
         echo "  - No main mount"
     fi
@@ -70,7 +70,7 @@ if [ -n "$LOOP_DEVICES" ]; then
     echo "Detaching loop devices..."
     for loop in $LOOP_DEVICES; do
         echo "  Detaching $loop..."
-        losetup -d "$loop" 2>/dev/null && echo "    ✓ Detached $loop" || echo "    ✗ Failed to detach $loop"
+        losetup -d "$loop" 2>/dev/null && echo "    [OK] Detached $loop" || echo "    [FAIL] Failed to detach $loop"
     done
 else
     echo "No loop devices found for ${IMAGE_NAME}"
@@ -86,7 +86,7 @@ if [ -n "$WORKSPACE_LOOPS" ]; then
     echo ""
     for loop in $WORKSPACE_LOOPS; do
         echo "  Detaching $loop..."
-        losetup -d "$loop" 2>/dev/null && echo "    ✓ Detached $loop" || echo "    ✗ Failed to detach $loop"
+        losetup -d "$loop" 2>/dev/null && echo "    [OK] Detached $loop" || echo "    [FAIL] Failed to detach $loop"
     done
 else
     echo "No orphaned loop devices found"
@@ -100,19 +100,19 @@ echo ""
 
 # Final status check
 if mountpoint -q "${MOUNT_POINT}" 2>/dev/null; then
-    echo "⚠️  WARNING: ${MOUNT_POINT} is still mounted!"
+    echo "WARNING: ${MOUNT_POINT} is still mounted!"
     echo "Remaining mounts:"
     mount | grep "${MOUNT_POINT}"
 else
-    echo "✓ All mounts cleaned up"
+    echo "[OK] All mounts cleaned up"
 fi
 
 REMAINING_LOOPS=$(losetup -j "${IMAGE_PATH}" 2>/dev/null)
 if [ -n "$REMAINING_LOOPS" ]; then
-    echo "⚠️  WARNING: Loop devices still attached!"
+    echo "WARNING: Loop devices still attached!"
     echo "$REMAINING_LOOPS"
 else
-    echo "✓ All loop devices detached"
+    echo "[OK] All loop devices detached"
 fi
 
 echo ""
