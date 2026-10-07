@@ -110,28 +110,27 @@ echo "Loop device: ${LOOP_DEV}"
 partprobe ${LOOP_DEV} 2>/dev/null || true
 blockdev --rereadpt ${LOOP_DEV} 2>/dev/null || true
 
-# Try kpartx as more reliable alternative
-echo "Creating partition mappings with kpartx..."
-kpartx -av ${LOOP_DEV} || true
+sleep 2
 
-sleep 3
-
-# Verify partitions exist
+# Check if standard partition devices were created
 echo "Checking for partition devices..."
-echo "Partition devices:"
-ls -l ${LOOP_DEV}* 2>/dev/null || echo "No partition devices found with ${LOOP_DEV}* pattern"
-
-if [ ! -b "${LOOP_DEV}p1" ] || [ ! -b "${LOOP_DEV}p2" ] || [ ! -b "${LOOP_DEV}p3" ]; then
-    echo "Standard partition naming (${LOOP_DEV}pN) not found, checking alternatives..."
+if [ -b "${LOOP_DEV}p1" ] && [ -b "${LOOP_DEV}p2" ] && [ -b "${LOOP_DEV}p3" ]; then
+    echo "Standard partition devices created successfully"
+    PART1="${LOOP_DEV}p1"
+    PART2="${LOOP_DEV}p2"
+    PART3="${LOOP_DEV}p3"
+else
+    echo "Standard partition naming not available, trying kpartx..."
+    # Only use kpartx if standard partitions don't exist
+    kpartx -av ${LOOP_DEV} || true
+    sleep 2
     
-    # Try kpartx device mapper naming (/dev/mapper/loopXXpY)
     LOOP_NAME=$(basename ${LOOP_DEV})
     if [ -b "/dev/mapper/${LOOP_NAME}p1" ]; then
         echo "Using kpartx device mapper naming scheme"
         PART1="/dev/mapper/${LOOP_NAME}p1"
         PART2="/dev/mapper/${LOOP_NAME}p2"
         PART3="/dev/mapper/${LOOP_NAME}p3"
-    # Try alternative partition naming (loop24_1 vs loop24p1)
     elif [ -b "${LOOP_DEV}1" ]; then
         echo "Using alternative partition naming scheme"
         PART1="${LOOP_DEV}1"
@@ -145,26 +144,13 @@ if [ ! -b "${LOOP_DEV}p1" ] || [ ! -b "${LOOP_DEV}p2" ] || [ ! -b "${LOOP_DEV}p3
         echo "  /dev/mapper/${LOOP_NAME}p1, p2, p3"
         echo "  ${LOOP_DEV}1, ${LOOP_DEV}2, ${LOOP_DEV}3"
         echo ""
-        echo "Loop device info:"
-        losetup -l | grep $(basename ${LOOP_DEV}) || true
-        echo ""
-        echo "Device mapper info:"
-        ls -l /dev/mapper/ | grep ${LOOP_NAME} || echo "No device mapper entries"
-        echo ""
-        echo "This is likely a Docker container limitation."
-        echo "Try running with: docker-compose up -d --privileged"
-        
         losetup -d ${LOOP_DEV}
         exit 1
     fi
-else
-    PART1="${LOOP_DEV}p1"
-    PART2="${LOOP_DEV}p2"
-    PART3="${LOOP_DEV}p3"
 fi
 
 echo "Partition devices:"
-ls -la ${LOOP_DEV}* 2>/dev/null || ls -la ${LOOP_DEV}[0-9]* 2>/dev/null
+ls -la ${LOOP_DEV}* 2>/dev/null || ls -la /dev/mapper/$(basename ${LOOP_DEV})* 2>/dev/null
 
 # Write U-Boot SPL
 echo "Writing U-Boot SPL to partition 1..."
