@@ -239,9 +239,21 @@ UUID=WILL_BE_REPLACED / ext4 defaults 1 1
 tmpfs /tmp tmpfs defaults,nodev,nosuid 0 0
 EOF
     
+    # Copy first-boot setup script to rootfs
+    echo "Copying first-boot setup script..."
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    if [ -f "${SCRIPT_DIR}/first-boot-setup.sh" ]; then
+        cp "${SCRIPT_DIR}/first-boot-setup.sh" "${MOUNT_POINT}/root/first-boot-setup.sh"
+        chmod +x "${MOUNT_POINT}/root/first-boot-setup.sh"
+        echo "First-boot setup script copied to /root/first-boot-setup.sh"
+    fi
+    
     echo ""
     echo "[SKIP] Basic configuration created."
     echo "[SKIP] Package installation will need to be done after first boot."
+    echo ""
+    echo "After first boot, login as root and run:"
+    echo "  /root/first-boot-setup.sh"
     echo ""
 fi
 

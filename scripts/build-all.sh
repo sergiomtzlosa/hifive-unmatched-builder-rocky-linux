@@ -164,14 +164,13 @@ log "===================================================================="
 log "  [8/10] Installing System Packages (systemd, SSH, etc.)"
 log "===================================================================="
 log "This step will install essential packages to make the rootfs bootable."
-log "This may take 10-20 minutes depending on network speed..."
+log "Note: Requires QEMU user-mode emulation or will be skipped."
 log ""
 if bash "${SCRIPT_DIR}/install-system-packages.sh"; then
-    log "[OK] System packages installed successfully"
+    log "[OK] System packages step completed"
 else
-    log "[ERROR] System package installation failed!"
-    log "Check log file: ${LOG_FILE}"
-    exit 1
+    log "[WARN] System package installation had issues"
+    log "Packages may need to be installed manually after first boot"
 fi
 
 # Step 9: Reset root password
@@ -257,6 +256,13 @@ Default Credentials:
 Username: root
 Password: ${ROOT_PASSWORD:-rockylinux}
 SSH: Enabled on port 22
+
+First Boot Setup:
+-----------------
+If system packages were not installed during build, run after first boot:
+  /root/first-boot-setup.sh
+
+This will install systemd, SSH, NetworkManager, and all essential packages.
 
 Installed Software:
 -------------------
