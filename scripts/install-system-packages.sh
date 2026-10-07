@@ -80,7 +80,15 @@ trap cleanup EXIT
 
 # Install packages using chroot
 echo "Installing packages (this may take a while)..."
-if ! chroot "${MOUNT_POINT}" /bin/bash <<'CHROOT_EOF'
+echo ""
+
+# Check if we can chroot into RISC-V rootfs (suppress error output)
+if chroot "${MOUNT_POINT}" /bin/true 2>/dev/null; then
+    # We have QEMU user-mode emulation, proceed with package installation
+    echo "QEMU user-mode emulation detected, proceeding with package installation..."
+    echo ""
+    
+    chroot "${MOUNT_POINT}" /bin/bash <<'CHROOT_EOF'
 set -e
 
 # Update package database
@@ -176,23 +184,64 @@ EOF
 
 echo "Package installation complete!"
 CHROOT_EOF
-then
-    echo ""
-    echo "WARNING: Package installation had errors!"
-    echo "The system may not be fully bootable."
-    echo "You may need to manually install packages or check network connectivity."
-    echo ""
-    # Don't exit - continue with cleanup
-fi
 
-echo ""
-echo "System packages installed successfully!"
-echo ""
-echo "Installed components:"
-echo "  - systemd (init system)"
-echo "  - SSH server"
-echo "  - NetworkManager"
-echo "  - Basic system utilities"
-echo "  - Filesystem tools"
-echo ""
+    echo ""
+    echo "[OK] System packages installed successfully!"
+    echo ""
+    echo "Installed components:"
+    echo "  - systemd (init system)"
+    echo "  - SSH server"
+    echo "  - NetworkManager"
+    echo "  - Basic system utilities"
+    echo "  - Filesystem tools"
+    echo ""
+    
+else
+    # Cannot chroot - RISC-V binaries on x86_64 without QEMU user-mode
+    echo "========================================"
+    echo "WARNING: Cannot chroot into RISC-V rootfs"
+    echo "========================================"
+    echo ""
+    echo "The rootfs contains RISC-V binaries that cannot run on this x86_64 system."
+    echo ""
+    echo "Package installation requires either:"
+    echo "  1. QEMU user-mode emulation with binfmt_misc support"
+    echo "  2. Running this step on a RISC-V system"
+    echo "  3. Installing packages manually after first boot"
+    echo ""
+    echo "Skipping package installation..."
+    echo ""
+    echo "IMPORTANT: After first boot on HiFive Unmatched, run:"
+    echo "  dnf install -y systemd openssh-server NetworkManager"
+    echo "  systemctl enable sshd NetworkManager"
+    echo ""
+    
+    # Still create basic configuration files
+    echo "Creating basic configuration files..."
+    
+    # Set hostname
+    echo "unmatched-riscv" > "${MOUNT_POINT}/etc/hostname"
+    
+    # Create basic network configuration directory
+    mkdir -p "${MOUNT_POINT}/etc/systemd/network"
+    cat > "${MOUNT_POINT}/etc/systemd/network/20-wired.network" <<'EOF'
+[Match]
+Name=eth*
+
+[Network]
+DHCP=yes
+EOF
+    
+    # Configure fstab
+    cat > "${MOUNT_POINT}/etc/fstab" <<'EOF'
+# <file system> <mount point> <type> <options> <dump> <pass>
+UUID=WILL_BE_REPLACED / ext4 defaults 1 1
+tmpfs /tmp tmpfs defaults,nodev,nosuid 0 0
+EOF
+    
+    echo ""
+    echo "[SKIP] Basic configuration created."
+    echo "[SKIP] Package installation will need to be done after first boot."
+    echo ""
+fi
 

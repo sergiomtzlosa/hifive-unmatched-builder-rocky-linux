@@ -66,12 +66,38 @@ echo ""
 echo "Setting root password to: ${ROOT_PASSWORD}"
 echo ""
 
-# Set root password using chroot
-chroot "${MOUNT_POINT}" /bin/bash <<CHROOT_EOF
+# Check if we can chroot (need QEMU user-mode for RISC-V)
+if chroot "${MOUNT_POINT}" /bin/true 2>/dev/null; then
+    # We have QEMU user-mode emulation, can use chroot
+    echo "Using chroot method..."
+    chroot "${MOUNT_POINT}" /bin/bash <<CHROOT_EOF
 set -e
 echo "root:${ROOT_PASSWORD}" | chpasswd
 echo "Root password set successfully!"
 CHROOT_EOF
+else
+    # No QEMU user-mode, modify shadow file directly
+    echo "No QEMU user-mode available, using direct shadow file method..."
+    
+    # Generate password hash
+    # Use openssl passwd or python to create hash
+    if command -v openssl >/dev/null 2>&1; then
+        PASSWORD_HASH=$(openssl passwd -6 "${ROOT_PASSWORD}")
+    elif command -v python3 >/dev/null 2>&1; then
+        PASSWORD_HASH=$(python3 -c "import crypt; print(crypt.crypt('${ROOT_PASSWORD}', crypt.mksalt(crypt.METHOD_SHA512)))")
+    else
+        echo "ERROR: Cannot generate password hash (need openssl or python3)"
+        exit 1
+    fi
+    
+    # Backup shadow file
+    cp "${MOUNT_POINT}/etc/shadow" "${MOUNT_POINT}/etc/shadow.bak"
+    
+    # Replace root password in shadow file
+    sed -i "s|^root:[^:]*:|root:${PASSWORD_HASH}:|" "${MOUNT_POINT}/etc/shadow"
+    
+    echo "Root password set successfully using direct method!"
+fi
 
 # Also allow root login via SSH
 if [ -f "${MOUNT_POINT}/etc/ssh/sshd_config" ]; then
