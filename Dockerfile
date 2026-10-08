@@ -52,6 +52,9 @@ RUN apt-get update && apt-get install -y \
     kmod \
     cpio \
     dnf \
+    libgnutls28-dev \
+    uuid-dev \
+    libuuid1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
