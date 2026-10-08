@@ -93,7 +93,7 @@ ENV WORKSPACE=/workspace
 ENV BUILD_DIR=/workspace/build
 ENV OUTPUT_DIR=/workspace/output
 ENV OPENSBI_VERSION=v1.3
-ENV UBOOT_VERSION=v2024.01
+ENV UBOOT_VERSION=v2026.07
 
 # Set default command
 CMD ["/bin/bash"]

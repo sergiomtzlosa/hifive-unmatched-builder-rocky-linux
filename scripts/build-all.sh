@@ -206,7 +206,7 @@ Log File: ${LOG_FILE}
 Components:
 -----------
 OpenSBI:  ${OPENSBI_VERSION:-v1.3}
-U-Boot:   ${UBOOT_VERSION:-v2024.01}
+U-Boot:   ${UBOOT_VERSION:-v2026.07}
 Rootfs:   Rocky Linux / Fedora RISC-V
 
 Toolchain:

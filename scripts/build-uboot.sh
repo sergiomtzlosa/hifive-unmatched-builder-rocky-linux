@@ -12,7 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE_ROOT="$(cd "${SCRIPT_DIR}/../workspace" && pwd)"
 
 # Configuration
-UBOOT_VERSION=${UBOOT_VERSION:-v2024.01}
+UBOOT_VERSION=${UBOOT_VERSION:-v2026.07}
 BUILD_DIR=${BUILD_DIR:-${WORKSPACE_ROOT}/build}
 UBOOT_DIR="${BUILD_DIR}/u-boot"
 

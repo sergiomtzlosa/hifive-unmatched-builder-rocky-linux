@@ -453,7 +453,7 @@ CROSS_COMPILE=riscv64-buildroot-linux-gnu-
 
 # Versions
 OPENSBI_VERSION=v1.3
-UBOOT_VERSION=v2024.01
+UBOOT_VERSION=v2026.07
 
 # Image Configuration
 IMAGE_SIZE=4G
@@ -531,7 +531,7 @@ You'll need to install:
 
 ### Software Stack
 - OpenSBI: v1.3 (Supervisor Binary Interface)
-- U-Boot: v2024.01 (Bootloader)
+- U-Boot: v2026.07 (Bootloader)
 - Linux Kernel: v6.6 (built from source)
 - Rocky Linux: 10 RISC-V (or Fedora RISC-V fallback)
 

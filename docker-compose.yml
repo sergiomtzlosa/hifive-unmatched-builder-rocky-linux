@@ -26,7 +26,7 @@ services:
     environment:
       - CROSS_COMPILE=riscv64-buildroot-linux-gnu-
       - OPENSBI_VERSION=v1.3
-      - UBOOT_VERSION=v2024.01
+      - UBOOT_VERSION=v2026.07
       - IMAGE_SIZE=4G
     stdin_open: true
     tty: true
